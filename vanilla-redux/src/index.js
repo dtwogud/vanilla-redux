@@ -1,17 +1,22 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+const add = document.getElementById("add");
+const minus = document.getElementById("minus");
+const number = document.querySelector("span");
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+let count = 0;
+number.innerText = count;
+const updateTxt = () => {
+  number.innerText = count;
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+}
+
+const handleAdd = () => { 
+  count += 1;
+updateTxt();
+}
+const handleMinus = () => { 
+  count -= 1;
+updateTxt();
+}
+
+add.addEventListener("click", handleAdd);
+minus.addEventListener("click", handleMinus);
