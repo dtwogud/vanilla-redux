@@ -1,56 +1,71 @@
 import {createStore} from "redux";
 
-// const add = document.getElementById("add");
-// const minus = document.getElementById("minus");
-// const number = document.querySelector("span");
+const form = document.querySelector("form")
+const input = document.querySelector("input")
+const ul = document.querySelector("ul")
 
-// let count = 0;
-// number.innerText = count;
-// const updateTxt = () => {
-//   number.innerText = count;
+const ADD_TODO = "ADD_TODO";
+const DEL_TODO = "DEL_TODO";
 
-// }
+const addTodo = text => {
+  return {
+    type : ADD_TODO, text
+  }
+}
 
-// const handleAdd = () => { 
-//   count += 1;
-// updateTxt();
-// }
-// const handleMinus = () => { 
-//   count -= 1;
-// updateTxt();
-// }
+const delTodo = id => {
+  return{
+    type : DEL_TODO, id
+  }
+}
 
-// add.addEventListener("click", handleAdd);
-// minus.addEventListener("click", handleMinus);
-
-const add = document.getElementById("add");
-const minus = document.getElementById("minus");
-const number = document.querySelector("span");
-
-const ADD = "ADD";
-const MINUS = "MINUS";
-
-const countModifier = (count = 0, action) => {   //reducer 생성
+const reducer = (state=[], action) => {
   switch(action.type){
-    case "ADD":
-      return count += 1;
-    case "MINUS":
-      return count -= 1;
+    case ADD_TODO:
+      const newTodo = {text:action.text, id:Date.now()}
+      return[newTodo, ...state]
+    case DEL_TODO:
+      const cleaned =  state.filter(toDo => toDo.id !== action.id)
+      return cleaned
     default:
-      return count;
-  } 
+      return state;
+  }
+}
+const store = createStore(reducer);
+
+store.subscribe(()=>{console.log(store.getState())})
+
+const onSubmit = event => {
+  event.preventDefault();
+  const toDo = input.value;
+  input.value = "";
+  dispatchAddTodo(toDo)
 }
 
-const countStore = createStore(countModifier);   //store생성
-// countStore.dispatch({type : "ADD"})
-// countStore.dispatch({type : "MINUS"})
-// console.log(countStore.getState());
-
-const onChange = () => {
-  number.innerText = countStore.getState();
+const dispatchAddTodo = text => {
+  store.dispatch(addTodo(text))
 }
 
-countStore.subscribe(onChange);
+const disdpatchDelTodo = e => {
+  const id = parseInt(e.target.parentNode.id)
+  store.dispatch(delTodo(id))
+}
 
-add.addEventListener("click", () => {countStore.dispatch({type : ADD})})
-minus.addEventListener("click", () => {countStore.dispatch({type : MINUS})})
+const paintTodos = () => {
+  const toDos = store.getState();
+  ul.innerHTML = "";
+  toDos.forEach(toDo => {
+    const li = document.createElement("li")
+    const btn = document.createElement("button")
+    btn.innerText = "Del"
+    btn.addEventListener("click", disdpatchDelTodo)
+    li.id = toDo.id
+    li.innerText = toDo.text
+    li.appendChild(btn)
+    ul.appendChild(li)
+  }
+  )
+}
+
+store.subscribe(paintTodos)
+form.addEventListener("submit",onSubmit)
