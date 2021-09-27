@@ -34,7 +34,7 @@ const delTodo = createAction("DELETE") //Action의 이름
 //       return state;
 //   }
 // }
-
+ 
 const reducer = createReducer([],{
   [addTodo] : (state, action) => {
     state.push({text:action.payload, id:Date.now()})
